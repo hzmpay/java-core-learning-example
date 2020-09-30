@@ -1,0 +1,8 @@
+server:
+  port: 8888
+  tomcat:
+    max-threads: 500
+
+#spring:
+#  redis:
+#    host: 172.21.13.213

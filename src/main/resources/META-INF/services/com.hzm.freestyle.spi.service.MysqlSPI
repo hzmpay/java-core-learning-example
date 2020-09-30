@@ -1,0 +1,2 @@
+com.hzm.freestyle.spi.service.Impl.DruidSPIImpl
+com.hzm.freestyle.spi.service.Impl.JDBCSPIImpl
