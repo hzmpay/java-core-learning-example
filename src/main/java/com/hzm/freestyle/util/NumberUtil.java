@@ -1,4 +1,4 @@
-package com.hzm.freestyle;
+package com.hzm.freestyle.util;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.ConcurrentHashMap;
