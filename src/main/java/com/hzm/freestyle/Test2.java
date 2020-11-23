@@ -3,7 +3,6 @@ package com.hzm.freestyle;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -15,10 +14,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class Test2 {
 
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     private static final ThreadPoolExecutor DEVICE_UPLOAD_DATA_THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(50, 50, 1, TimeUnit.MINUTES
             , new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("deviceUploadData-pool-").build());
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //        final Test2 test2 = new Test2();
 //
 //        for (int i = 0; i < 100; i++) {
@@ -33,11 +42,35 @@ public class Test2 {
 //        System.out.println(value1);
 //        System.out.println(value2);
 
-        final HashMap<String, Object> map = new HashMap<>();
+//        final HashMap<String, Object> map = new HashMap<>();
+//
+//        HashMap<String, Object> map2 = map;
+//        map2.put("a", 1);
+//        System.out.println(map);
 
-        HashMap<String, Object> map2 = map;
-        map2.put("a", 1);
-        System.out.println(map);
+//        final Test2 test2 = new Test2();
+//        final long start = System.currentTimeMillis();
+//        for (int i = 0; i < 4; i++) {
+//            test2.getClass().getMethod("setName", String.class).invoke(test2, "哈哈哈");
+//            System.out.println(test2.getName());
+//        }
+//        System.out.println(System.currentTimeMillis() - start);
+//
+//
+//        Map<String, Object> map = new HashMap<>();
+//        final Object a = map.putIfAbsent("a", 1);
+//        System.out.println(a);
+
+//        String a = "p1-1";
+//        String a2 = new StringBuilder().append("p1").append("-").append("1").toString();
+//        String[] arr = {"p1", "1"};
+//
+//        System.out.println(SizeEstimator.estimate(a));
+//        System.out.println(SizeEstimator.estimate(a2));
+//        System.out.println(SizeEstimator.estimate(arr));
+        final int i = Runtime.getRuntime().availableProcessors();
+        System.out.println();
+
     }
 
     /**

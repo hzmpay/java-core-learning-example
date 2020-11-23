@@ -6,3 +6,7 @@ server:
 #spring:
 #  redis:
 #    host: 172.21.13.213
+spring:
+  mvc:
+    servlet:
+      load-on-startup: 1
