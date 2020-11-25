@@ -1,6 +1,5 @@
 package com.hzm.freestyle.rmi.service;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.remoting.rmi.RmiServiceExporter;
@@ -16,7 +15,7 @@ public class RmiServiceConfig {
 
 	public static final String SERVICE_NAME = "helloService";
 
-	@Bean
+//	@Bean
 	public RmiServiceExporter myService(RmiService rmiService) {
 		RmiServiceExporter rmiServiceExporter = new RmiServiceExporter();
 		rmiServiceExporter.setService(rmiService);

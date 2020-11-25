@@ -1,8 +1,5 @@
 package com.hzm.freestyle.collection;
 
-import java.util.HashMap;
-import java.util.stream.IntStream;
-
 /**
  * @author Hezeming
  * @version 1.0
@@ -12,14 +9,14 @@ public class HashMapTest {
 
 
     public static void main(String[] args) {
-        final HashMap<String, Object> map = new HashMap<>();
-//
-        IntStream.rangeClosed(1, 13).forEach(e -> {
-            if (e == 13) {
-                System.out.println("到了7");
-            }
-            map.put(e + "", e);
-        });
+//        final HashMap<String, Object> map = new HashMap<>();
+////
+//        IntStream.rangeClosed(1, 13).forEach(e -> {
+//            if (e == 13) {
+//                System.out.println("到了7");
+//            }
+//            map.put(e + "", e);
+//        });
 //        final HashMapTest hashMapTest = new HashMapTest();
 
 
@@ -51,6 +48,29 @@ public class HashMapTest {
 //        IntStream.rangeClosed(1, 13).forEach(e -> {
 //            System.out.println(hash(e+ ""));
 //        });
+
+//        String a1 = "adadaasdadadadadadad";
+//        for (int len = 1; len < 9; len++) {
+//            System.out.println("=============> " + len + " <=============");
+//            System.out.println(hash(a1) % len + " ====== " + (hash(a1) & len - 1));
+//        }
+//
+//        System.out.println("分隔 ============ 》");
+//
+//        String a2 = "fsfa54a8f48a48484fa";
+//        for (int len = 1; len < 9; len++) {
+//            System.out.println("=============> " + len + " <=============");
+//            System.out.println(hash(a2) % len + " ====== " + (hash(a2) & len - 1));
+//        }
+
+        String a = "fsfa54a8f48a48484fa";
+        int hash = hash(a);
+        int len = 2;
+        for (int i = 0; i < 20; i++) {
+            System.out.println(len + " =========> " + (hash & len - 1));
+            System.out.println(len + " =========> " + Integer.toBinaryString(hash & len - 1));
+            len = len << 1;
+        }
 
     }
 

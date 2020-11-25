@@ -2,7 +2,6 @@ package com.hzm.freestyle.rmi.client;
 
 import com.hzm.freestyle.rmi.service.RmiServiceConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.remoting.rmi.RmiProxyFactoryBean;
 
@@ -14,7 +13,7 @@ import org.springframework.remoting.rmi.RmiProxyFactoryBean;
 @Configuration
 public class RmiClientConfig {
 
-	@Bean
+//	@Bean
 	public RmiProxyFactoryBean myClient() {
 		RmiProxyFactoryBean rmiProxyFactoryBean = new RmiProxyFactoryBean();
 		rmiProxyFactoryBean.setServiceUrl("RMI://127.0.0.1:8888/" + RmiServiceConfig.SERVICE_NAME);
