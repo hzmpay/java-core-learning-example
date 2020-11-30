@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 /**
@@ -87,7 +88,7 @@ public class CyclicBarrierTest {
     }
 
     public static final Object obj = new Object();
-    public static final Object obj2 = new Object();
+    public static final AtomicInteger totalNum = new AtomicInteger();
 
     public static void notifyWait() throws InterruptedException {
         final Thread thread = Thread.currentThread();
@@ -98,30 +99,42 @@ public class CyclicBarrierTest {
                 System.out.println("工人" + i + "等待司机到来");
                 final Thread thread1 = Thread.currentThread();
                 System.out.println("子线程：" + thread1.getName());
+                // 等待500ms让线程全部执行完，再唤醒主线程的司机
+                Thread.sleep(500);
                 synchronized (obj) {
+                    obj.notifyAll();
                     obj.wait();
                 }
-                System.out.println("工人" + i + "开始卸货");
-                list.add(i);
-                if (list.size() >= 10) {
-                    synchronized (obj2) {
-                        obj2.notify();
+                Thread.sleep(10);
+                synchronized (obj) {
+                    System.out.println("工人" + i + "开始卸货");
+                    list.add(i);
+                    Thread.sleep(100);
+                    if (list.size() >= num) {
+                        System.out.println("工人全部卸货完成 ===========》");
+                        obj.notifyAll();
+                    } else {
+                        obj.wait();
                     }
                 }
-            } catch (InterruptedException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }).start());
 
+        synchronized (obj) {
+            obj.wait();
+        }
         System.out.println("司机来了 ===========》");
+        System.out.println("开始等待工人卸货 ===========》");
         synchronized (obj) {
             obj.notifyAll();
         }
-        System.out.println("开始等待工人卸货 ===========》");
-        synchronized (obj2) {
-            obj2.wait();
+        Thread.sleep(10);
+        synchronized (obj) {
+            obj.wait();
+            System.out.println("司机开车 ===========》");
         }
-        System.out.println("司机开车 ===========》");
     }
 
     public static void main(String[] args) throws InterruptedException, BrokenBarrierException {
