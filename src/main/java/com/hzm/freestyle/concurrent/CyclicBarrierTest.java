@@ -127,11 +127,9 @@ public class CyclicBarrierTest {
         }
         System.out.println("司机来了 ===========》");
         System.out.println("开始等待工人卸货 ===========》");
-        synchronized (obj) {
-            obj.notifyAll();
-        }
         Thread.sleep(10);
         synchronized (obj) {
+            obj.notifyAll();
             obj.wait();
             System.out.println("司机开车 ===========》");
         }
