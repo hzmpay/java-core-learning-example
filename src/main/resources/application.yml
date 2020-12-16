@@ -3,10 +3,13 @@ server:
   tomcat:
     max-threads: 500
 
-#spring:
-#  redis:
-#    host: 172.21.13.213
 spring:
+  redis:
+    host: 172.21.13.211
+    port: 6379
+    jedis:
+      pool:
+        max-active: 8
   mvc:
     servlet:
       load-on-startup: 1
