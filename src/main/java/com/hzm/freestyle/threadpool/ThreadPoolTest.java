@@ -53,6 +53,7 @@ public class ThreadPoolTest {
             System.out.println("拒绝策略执行");
         }
         );
+        threadPoolExecutor.allowCoreThreadTimeOut(false);
 
         for (int i = 1; i <= 5; i++) {
             int finalI = i;
@@ -60,7 +61,7 @@ public class ThreadPoolTest {
             final Thread thread = new Thread(() -> {
                 try {
                     System.out.println(finalI + "开始执行");
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                     System.out.println(finalI + "执行完毕");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
