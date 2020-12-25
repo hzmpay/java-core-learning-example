@@ -99,6 +99,15 @@
             <version>3.13</version>
         </dependency>
 
+		<!-- 可以查看对象头，Mark Word -->
+		<!-- https://mvnrepository.com/artifact/org.openjdk.jol/jol-cli -->
+		<dependency>
+			<groupId>org.openjdk.jol</groupId>
+			<artifactId>jol-cli</artifactId>
+			<version>0.14</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

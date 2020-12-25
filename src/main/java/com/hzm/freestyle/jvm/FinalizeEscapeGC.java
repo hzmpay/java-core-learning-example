@@ -17,6 +17,7 @@ public class FinalizeEscapeGC {
     protected void finalize() throws Throwable {
         super.finalize();
         System.out.println("finalize mehtod executed!");
+        Thread.sleep(1000);
         FinalizeEscapeGC.SAVE_HOOK = this;
     }
 
