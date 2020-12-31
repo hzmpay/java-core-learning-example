@@ -38,13 +38,12 @@ public class ThreadPoolTest {
 
 //        Executor executor = Executors.newCachedThreadPool(new ThreadFactory());
 
-        ExecutorService executorService = Executors.newCachedThreadPool();
-
+//        ExecutorService executorService = Executors.newCachedThreadPool();
 
         final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
                 1
                 , 3
-                , 2
+                , 1
                 , TimeUnit.SECONDS
                 , new LinkedBlockingQueue<>(1)
                 , r -> new Thread(r)
@@ -53,7 +52,8 @@ public class ThreadPoolTest {
             System.out.println("拒绝策略执行");
         }
         );
-        threadPoolExecutor.allowCoreThreadTimeOut(false);
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+//        threadPoolExecutor.prestartAllCoreThreads();
 
         for (int i = 1; i <= 5; i++) {
             int finalI = i;
@@ -61,7 +61,7 @@ public class ThreadPoolTest {
             final Thread thread = new Thread(() -> {
                 try {
                     System.out.println(finalI + "开始执行");
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                     System.out.println(finalI + "执行完毕");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
