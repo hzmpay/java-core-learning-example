@@ -18,7 +18,7 @@ public class RedisThreadTest {
     /**
      * 数据容量
      */
-    public static final int COUNT = 100 * 10000;
+    public static final int COUNT = 1000 * 10000;
     /**
      * 模拟redis存储
      */
