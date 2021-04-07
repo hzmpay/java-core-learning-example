@@ -1,4 +1,4 @@
-package com.hzm.freestyle.modbus;
+package com.hzm.freestyle.pag.modbus;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;

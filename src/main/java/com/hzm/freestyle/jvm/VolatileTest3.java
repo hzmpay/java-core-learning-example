@@ -23,7 +23,8 @@ public class VolatileTest3 {
             threads[i] = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (race < 1000) {
+                    while (race < 10 * 0000) {
+                        // 并发情况下会超过100000
                         increase();
                     }
                 }

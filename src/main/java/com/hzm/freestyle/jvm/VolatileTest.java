@@ -21,14 +21,15 @@ public class VolatileTest {
                 long l = System.currentTimeMillis();
                 while (!isStop) {
                     //do nothing
-//                    System.out.println("执行中");
+                    // 下面一行注释掉程序不会停止，说明isStop改变没生效
+                    System.out.println("执行中");
                 }
                 System.out.println(System.currentTimeMillis() - l);
             }
         };
         thread.start();
         try {
-            TimeUnit.SECONDS.sleep(3);
+            TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

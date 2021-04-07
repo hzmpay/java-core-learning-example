@@ -1,4 +1,4 @@
-package com.hzm.freestyle.modbus;
+package com.hzm.freestyle.pag.modbus;
 
 /**
  * Modbus工具类

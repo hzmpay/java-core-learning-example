@@ -1,13 +1,15 @@
 package com.hzm.freestyle.jvm;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * volatile变量自增运算测试
  *
  * @author Hezeming
  * @version 1.0
- * @date 2020年06月24日
+ * @data 2021年04月06日
  */
-public class VolatileTest2 {
+public class VolatileTest4 {
 
     public static volatile int race = 0;
 
@@ -16,6 +18,8 @@ public class VolatileTest2 {
     }
 
     private static final int THREADS_COUNT = 20;
+
+    private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch(THREADS_COUNT);
 
     public static void main(String[] args) throws InterruptedException {
         Thread[] threads = new Thread[THREADS_COUNT];
@@ -26,6 +30,7 @@ public class VolatileTest2 {
                     for (int i = 0; i < 1000; i++) {
                         increase();
                     }
+                    COUNT_DOWN_LATCH.countDown();
                 }
             });
             threads[i].start();
@@ -34,7 +39,7 @@ public class VolatileTest2 {
 //        while (Thread.activeCount() > 1) {
 //            Thread.yield();
 //        }
-        Thread.sleep(3000);
+        COUNT_DOWN_LATCH.await();
         System.out.println(race);
     }
 }
