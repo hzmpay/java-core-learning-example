@@ -13,3 +13,9 @@ spring:
   mvc:
     servlet:
       load-on-startup: 1
+demo:
+  properties:
+#    person-name: 测试1
+    personName: 测试2
+  server:
+    port: 8989
