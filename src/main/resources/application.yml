@@ -17,5 +17,6 @@ demo:
   properties:
 #    person-name: 测试1
     personName: 测试2
+    person_name: 测试2
   server:
     port: 8989

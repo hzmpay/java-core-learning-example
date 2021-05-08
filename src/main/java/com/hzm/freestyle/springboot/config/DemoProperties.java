@@ -15,4 +15,6 @@ import org.springframework.context.annotation.Configuration;
 public class DemoProperties {
 
     private String personName;
+
+    private String person_name;
 }
