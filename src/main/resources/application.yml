@@ -1,7 +1,7 @@
 server:
   port: 8888
-  tomcat:
-    max-threads: 500
+#  tomcat:
+#    max-threads: 500
 
 spring:
   redis:
@@ -13,10 +13,10 @@ spring:
   mvc:
     servlet:
       load-on-startup: 1
-demo:
-  properties:
-#    person-name: 测试1
-    personName: 测试2
-    person_name: 测试2
-  server:
-    port: 8989
+#demo:
+#  properties:
+##    person-name: 测试1
+#    personName: 测试2
+#    person_name: 测试2
+#  server:
+#    port: 8989

@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsServer;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,7 @@ import java.net.InetSocketAddress;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(DemoServerProperties.class)
+@ConditionalOnBean(DemoServerProperties.class)
 @Slf4j
 public class DemoServerAutoConfigure {
 
