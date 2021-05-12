@@ -127,12 +127,70 @@ public class CompletableFutureTest {
         CompletableFuture<Object> anyFuture = CompletableFuture.anyOf(future1, future2);
         // 其中一个任务执行完成立马返回
         System.out.println(anyFuture.get());
-
-
     }
 
+    public static void getNowTest() throws ExecutionException, InterruptedException {
+
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        });
+
+        TimeUnit.SECONDS.sleep(3);
+        // 调用getNow的时候如果future还未执行完成则返回传入的默认值，执行完成则返回正常返回值
+        System.out.println(future1.getNow("OK"));
+    }
+
+    public static void joinTest() throws ExecutionException, InterruptedException {
+
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        });
+        // join和Thread的join效果一样，阻塞主线程
+        future1.join();
+        System.out.println("主线程开始执行");
+    }
+
+    public static void whenTest() throws ExecutionException, InterruptedException {
+
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            int a = 0/1;
+            log.info("future1 执行完毕");
+            return "future1";
+        });
+        future1.whenComplete((t, u) -> {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("输出结果：t = {}, u = {}", t, u);
+        });
+        System.out.println("主线程开始执行");
+        Thread.sleep(5000L);
+    }
+
+
+
     public static void main(String[] args) throws Exception {
-        allOfAndAnyOfTest();
+        whenTest();
+//        joinTest();
+//        getNowTest();
+//        allOfAndAnyOfTest();
 //        runAsyncTest();
 //        supplyAsyncTest();
     }
