@@ -1,12 +1,14 @@
 package com.hzm.freestyle.concurrent;
 
+import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -254,6 +256,47 @@ public class CompletableFutureTest {
         Thread.sleep(5000L);
     }
 
+    public static void whenCompleteTest4() throws ExecutionException, InterruptedException {
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        });
+        Thread.sleep(500);
+        // future1先执行再执行whenComplete传递的action，如果future1有异常，则直接执行action
+        future1.whenComplete((t, u) -> {
+            log.info("whenComplete 开始执行");
+            log.info("whenComplete线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // t是结果，u是异常
+            log.info("输出结果：t = {}, 异常：u = {}", t, u);
+        }).whenComplete((t, u) -> {
+            log.info("whenComplete2 开始执行");
+            log.info("whenComplete2线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // t是结果，u是异常
+            log.info("输出结果：t2 = {}, 异常：u2 = {}", t, u);
+        });
+        // future1和whenComplete用的是同一个线程，都是守护线程，不会阻塞主程序执行
+        System.out.println("主线程开始执行");
+        // 等待5秒让future1执行完毕，因为它执行的是守护线程
+        Thread.sleep(5000L);
+    }
+
     public static void whenCompleteAsyncTest() throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
         CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
@@ -329,6 +372,10 @@ public class CompletableFutureTest {
             log.info("thenAccept 开始执行");
             System.out.println(e);
             return e + " =====> thenApply";
+        }).thenApply(e -> {
+            log.info("thenAccept2 开始执行");
+            System.out.println(e);
+            return e + " =====> thenApply2";
         });
         System.out.println(completableFuture.get());
     }
@@ -372,8 +419,10 @@ public class CompletableFutureTest {
 
     public static void main(String[] args) throws Exception {
 //        thenApplyTest();
-        thenAcceptTest();
+//        thenAcceptTest();
 //        whenCompleteAsyncTest();
+//        whenCompleteTest4();
+//        whenCompleteTest3();
 //        whenCompleteTest2();
 //        whenCompleteTest();
 //        joinTest();
@@ -381,34 +430,79 @@ public class CompletableFutureTest {
 //        allOfAndAnyOfTest();
 //        runAsyncTest();
 //        supplyAsyncTest();
+        //
+        demo1();
     }
 
     // <--------------------------------------  以下为实战例子Demo -------------------------------------->
 
     /**
-     * 场景1：批量请求第三方系统获取一万条数据
+     * 场景1：商品详情页取数据
+     * 1.先获取用户信息
+     * 2.根据用户并行获取专属的商品折扣信息，用户对应的购物车信息
      *
      * @param
      * @return void
      * @author Hezeming
      */
     public static void demo1() throws ExecutionException, InterruptedException {
-        AtomicInteger num = new AtomicInteger();
-//        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> num.incrementAndGet());
-//        future.thenCombine()
-
-
-        List<CompletableFuture> list = new ArrayList<>(100);
-        for (int i = 0; i < 10000 / 100; i++) {
-            CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> num.incrementAndGet());
-            list.add(future);
-        }
-        CompletableFuture
-                .allOf(list.toArray(new CompletableFuture[list.size()]))
-                .thenAccept(e -> {
-                    System.out.println(e);
-                });
-
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+            Map<String, Object> map = Maps.newHashMapWithExpectedSize(3);
+            String userInfo = "小明";
+            try {
+                log.info("【User】开始获取用户信息");
+                Thread.sleep(100);
+                log.info("【User】用户信息获取成功 : {} ", userInfo);
+                map.put("userInfo", userInfo);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return map;
+        }, executorService).thenApply(result -> {
+//            if (exception != null) {
+//                log.info("获取用户信息异常", exception.getMessage());
+//                return;
+//            }
+            log.info("获取到用户的信息为 ：{} ", result.get("userInfo"));
+            log.info("开始获取专属的商品折扣信息，用户对应的购物车信息");
+            CompletableFuture<Void> productFuture = CompletableFuture.runAsync(() -> {
+                log.info("【Product】开始获取专属的商品折扣信息");
+                System.out.println(Thread.currentThread().getName());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                HashMap product = new HashMap() {{
+                    put("rate", "8折");
+                    put("price", new BigDecimal(80));
+                }};
+                result.put("product", product);
+                log.info("【Product】获取专属的商品折扣信息已完成");
+            });
+            CompletableFuture<Void> shoppingCartFuture = CompletableFuture.runAsync(() -> {
+                log.info("【ShoppingCart】开始获取用户对应的购物车信息");
+                System.out.println(Thread.currentThread().getName());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                result.put("shoppingCart", Arrays.asList("白T，蓝T，黄短裤"));
+                log.info("【ShoppingCart】获取用户对应的购物车信息已完成");
+            });
+            CompletableFuture<Void> future1 = CompletableFuture.allOf(productFuture, shoppingCartFuture);
+            try {
+                future1.get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            return result;
+        });
+        System.out.println(future.get());
     }
 
 }
