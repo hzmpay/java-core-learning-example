@@ -3,7 +3,10 @@ package com.hzm.freestyle.concurrent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 /**
@@ -164,35 +167,248 @@ public class CompletableFutureTest {
         System.out.println("主线程开始执行");
     }
 
-    public static void whenTest() throws ExecutionException, InterruptedException {
-
+    public static void whenCompleteTest() throws ExecutionException, InterruptedException {
         CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
             log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
-            int a = 0/1;
+            log.info("future1线程是：{} ", Thread.currentThread());
+            // 演示异常效果
+            int a = 1 / 0;
             log.info("future1 执行完毕");
             return "future1";
         });
+        // future1先执行再执行whenComplete传递的action，如果future1有异常，则直接执行action
         future1.whenComplete((t, u) -> {
+            log.info("whenComplete 开始执行");
+            log.info("当前线程是：{} ", Thread.currentThread());
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            log.info("输出结果：t = {}, u = {}", t, u);
+            // t是结果，u是异常
+            log.info("输出结果：t = {}, 异常：u = {}", t, u);
         });
         System.out.println("主线程开始执行");
+        // 等待5秒让future1执行完毕，因为它执行的是守护线程
         Thread.sleep(5000L);
     }
 
+    public static void whenCompleteTest2() throws ExecutionException, InterruptedException {
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        });
+        // future1先执行再执行whenComplete传递的action，如果future1有异常，则直接执行action
+        future1.whenComplete((t, u) -> {
+            log.info("whenComplete 开始执行");
+            log.info("whenComplete线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // t是结果，u是异常
+            log.info("输出结果：t = {}, 异常：u = {}", t, u);
+        });
+        // future1和whenComplete用的是同一个线程，都是守护线程，不会阻塞主程序执行
+        System.out.println("主线程开始执行");
+        // 等待5秒让future1执行完毕，因为它执行的是守护线程
+        Thread.sleep(5000L);
+    }
 
+    public static void whenCompleteTest3() throws ExecutionException, InterruptedException {
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        });
+        Thread.sleep(500);
+        // future1先执行再执行whenComplete传递的action，如果future1有异常，则直接执行action
+        future1.whenComplete((t, u) -> {
+            log.info("whenComplete 开始执行");
+            log.info("whenComplete线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // t是结果，u是异常
+            log.info("输出结果：t = {}, 异常：u = {}", t, u);
+        });
+        // future1和whenComplete用的是同一个线程，都是守护线程，不会阻塞主程序执行
+        System.out.println("主线程开始执行");
+        // 等待5秒让future1执行完毕，因为它执行的是守护线程
+        Thread.sleep(5000L);
+    }
+
+    public static void whenCompleteAsyncTest() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        }, executorService);
+        // future1先执行再执行whenComplete传递的action，如果future1有异常，则直接执行action
+        future1.whenCompleteAsync((t, u) -> {
+            log.info("whenCompleteAsync 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("whenCompleteAsync线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // t是结果，u是异常
+            log.info("输出结果：t = {}, 异常：u = {}", t, u);
+        });
+        // future1和whenComplete用的是同一个线程，都是守护线程，不会阻塞主程序执行
+        System.out.println("主线程开始执行");
+        // 等待5秒让future1执行完毕，因为它执行的是守护线程
+//        Thread.sleep(5000L);
+    }
+
+    public static void thenAcceptTest() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        }, executorService);
+        // thenAccept不会向下传递
+        future1.thenAccept(e -> {
+            log.info("thenAccept1 开始执行");
+            System.out.println(e);
+        }).thenAccept(e -> {
+            log.info("thenAccept2 开始执行");
+            System.out.println(e);
+        }).thenAccept(e -> {
+            log.info("thenAccept3 开始执行");
+            System.out.println(e);
+        });
+
+    }
+
+    public static void thenApplyTest() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        }, executorService);
+        CompletableFuture<String> completableFuture = future1.thenApply(e -> {
+            log.info("thenAccept 开始执行");
+            System.out.println(e);
+            return e + " =====> thenApply";
+        });
+        System.out.println(completableFuture.get());
+    }
+
+    public static void thenCompleteAsyncTest() throws ExecutionException, InterruptedException {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+            log.info("future1 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("future1线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info("future1 执行完毕");
+            return "future1";
+        }, executorService);
+        future1.thenAccept(e -> {
+            System.out.println(e);
+        });
+
+
+        future1.whenCompleteAsync((t, u) -> {
+            log.info("whenCompleteAsync 是否为守护线程 ：{} ", Thread.currentThread().isDaemon());
+            log.info("whenCompleteAsync线程是：{} ", Thread.currentThread());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // t是结果，u是异常
+            log.info("输出结果：t = {}, 异常：u = {}", t, u);
+        });
+        // future1和whenComplete用的是同一个线程，都是守护线程，不会阻塞主程序执行
+        System.out.println("主线程开始执行");
+        // 等待5秒让future1执行完毕，因为它执行的是守护线程
+//        Thread.sleep(5000L);
+    }
+
+    // <--------------------------------------  以上为API学习例子 -------------------------------------->
 
     public static void main(String[] args) throws Exception {
-        whenTest();
+//        thenApplyTest();
+        thenAcceptTest();
+//        whenCompleteAsyncTest();
+//        whenCompleteTest2();
+//        whenCompleteTest();
 //        joinTest();
 //        getNowTest();
 //        allOfAndAnyOfTest();
 //        runAsyncTest();
 //        supplyAsyncTest();
+    }
+
+    // <--------------------------------------  以下为实战例子Demo -------------------------------------->
+
+    /**
+     * 场景1：批量请求第三方系统获取一万条数据
+     *
+     * @param
+     * @return void
+     * @author Hezeming
+     */
+    public static void demo1() throws ExecutionException, InterruptedException {
+        AtomicInteger num = new AtomicInteger();
+//        CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> num.incrementAndGet());
+//        future.thenCombine()
+
+
+        List<CompletableFuture> list = new ArrayList<>(100);
+        for (int i = 0; i < 10000 / 100; i++) {
+            CompletableFuture<Integer> future = CompletableFuture.supplyAsync(() -> num.incrementAndGet());
+            list.add(future);
+        }
+        CompletableFuture
+                .allOf(list.toArray(new CompletableFuture[list.size()]))
+                .thenAccept(e -> {
+                    System.out.println(e);
+                });
+
     }
 
 }
