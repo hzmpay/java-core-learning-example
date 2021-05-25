@@ -2,6 +2,7 @@ package com.hzm.freestyle.spring.webflux;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * @author Hezeming
@@ -12,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class SpringWebFluxApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringWebFluxApplication.class, args);
+        ConfigurableApplicationContext context = SpringApplication.run(SpringWebFluxApplication.class, args);
+        System.out.println(context.getEnvironment());
     }
 }
