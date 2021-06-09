@@ -14,6 +14,9 @@ public class 快速排序 {
 
     public static void main(String[] args) {
         int[] arr = {4, 1, 8, 6, 5, 3, 6, 2, 9, 10, 6, 7};
+        System.out.println(Arrays.toString(arr));
+        quickSort2(arr, 0, arr.length - 1);
+        System.out.println(Arrays.toString(arr));
         quickSort(arr, 0, arr.length - 1);
         System.out.println(Arrays.toString(arr));
     }
@@ -37,12 +40,12 @@ public class 快速排序 {
         }
         int left = i;
         int right = j;
-        // 确定一个中间值
+        // 确定一个中间值，左右指针决定了滑动的顺序
         int temp = arr[left];
 
         // 左右指针开始向中间滑动
         while (right > left) {
-            // 右指针向左滑动
+            // 右指针向左滑动（因为定义的是左指针为基准）
             while (arr[right] >= temp && right > left) {
                 right--;
             }
@@ -63,4 +66,38 @@ public class 快速排序 {
         quickSort(arr, left + 1, j);
     }
 
+    /**
+     * 两个指针，分别从数组的首尾开始向中间运动，
+     * （因为始终选取第一个值为temp）右指针先运动，右指针指到的数若小于枢纽元则停下来，此时，交换左右指针指向的数，
+     * 左指针运动，左指针指到的数若大于或等于枢纽元则停下来，此时，交换左右指针指向的数，
+     * 然后重复上述运动。直到左右指针相遇，运动结束。
+     * 时间复杂度：O(nlogn)
+     *
+     * @param arr 需要排序的数组
+     * @param i 数组需要排序的起始下标
+     * @param j 数组需要排序的结束下标
+     * @return void
+     * @author Hezeming
+     */
+    public static void quickSort2(int[] arr, int i, int j) {
+        if (i > j) {
+            return;
+        }
+        int left = i;
+        int right = j;
+        // 基准
+        int temp = arr[left];
+        while (left < right) {
+            while (arr[right] >= temp && left < right) {
+                right--;
+            }
+            SortUtil.swap(arr, left, right);
+            while (arr[left] <= temp && left < right) {
+                left++;
+            }
+            SortUtil.swap(arr, left, right);
+        }
+        quickSort2(arr, i, left - 1);
+        quickSort2(arr, left + 1, j);
+    }
 }
