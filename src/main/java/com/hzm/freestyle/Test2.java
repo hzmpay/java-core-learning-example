@@ -2,6 +2,7 @@ package com.hzm.freestyle;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -68,9 +69,10 @@ public class Test2 {
 //        System.out.println(SizeEstimator.estimate(a));
 //        System.out.println(SizeEstimator.estimate(a2));
 //        System.out.println(SizeEstimator.estimate(arr));
-        final int i = Runtime.getRuntime().availableProcessors();
-        System.out.println();
+//        final int i = Runtime.getRuntime().availableProcessors();
+//        System.out.println();
 
+        System.out.println(new BigDecimal(50).movePointRight(2).divide(new BigDecimal(50), 0, BigDecimal.ROUND_HALF_UP));
     }
 
     /**
